@@ -5,16 +5,19 @@ CLANG=$(LLVM_MOS)/bin/clang --config $(LLVM_MOS_SDK)/commodore/64.cfg -O2
 
 .PHONY: all clean
 
-all: factorial.prg factorial.s
+all: _build/factorial.prg _build/factorial.s
 
 clean:
-	rm -f factorial.prg factorial.s factorial.ll
+	rm -rf _build/
 
-factorial.prg: factorial.ll main.c
-	${CLANG} main.c factorial.ll -o factorial.prg
+_build/factorial.prg: _build/factorial.ll main.c
+	mkdir -p _build
+	${CLANG} $^ -o $@
 
-factorial.s: factorial.ll main.c
-	${CLANG} main.c factorial.ll -o factorial.s -Wl,--lto-emit-asm
+_build/factorial.s: _build/factorial.ll main.c
+	mkdir -p _build
+	${CLANG} $^ -o $@ -Wl,--lto-emit-asm
 
-factorial.ll: factorial.rs
-	rustc factorial.rs --emit=llvm-ir --crate-type=rlib -C debuginfo=0 -C opt-level=1
+_build/factorial.ll: factorial.rs
+	mkdir -p _build
+	rustc $^ --emit=llvm-ir --crate-type=rlib -C debuginfo=0 -C opt-level=1 -o $@
