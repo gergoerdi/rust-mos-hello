@@ -1,7 +1,7 @@
-LLVM_MOS	= /home/cactus/prog/rust/mos/llvm-mos
-LLVM_MOS_SDK	= /home/cactus/prog/rust/mos/llvm-mos-sdk/build
+LLVM_MOS	= /home/cactus/sdk/rust/llvm-mos
 
-CLANG=$(LLVM_MOS)/bin/clang --config $(LLVM_MOS_SDK)/commodore/64.cfg -O2
+CC=$(LLVM_MOS)/bin/mos-c64-clang
+CFLAGS=-O2
 
 .PHONY: all clean
 
@@ -12,11 +12,11 @@ clean:
 
 _build/factorial.prg: _build/factorial.ll main.c
 	mkdir -p _build
-	${CLANG} $^ -o $@
+	${CC} ${CFLAGS} $^ -o $@
 
 _build/factorial.s: _build/factorial.ll main.c
 	mkdir -p _build
-	${CLANG} $^ -o $@ -Wl,--lto-emit-asm
+	${CC} ${CFLAGS} $^ -o $@ -Wl,--lto-emit-asm
 
 _build/factorial.ll: factorial.rs
 	mkdir -p _build
